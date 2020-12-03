@@ -207,72 +207,22 @@ class Grid(object):
                 lst.append((i, j))
         return lst
 
-
-def solveSudoku(grid):
-    """
-    grid is an instance of the Grid class, either empty or partially filled. Function uses a DFS type algorithm to try and 
-    find a valid Sudoku based on the given grid.
-    Returns True if there is a complete valid sudoku grid possible, and updates the grid along the way. False otherwise.
-    """
-    for i, j in itertools.product(range(1, grid.size + 1), range(1, grid.size + 1)):
-        if grid.getCell(i, j) == 0:
-            used_list = grid.getRow(i) + grid.getColumn(j) + list(itertools.chain(*grid.getSubsquare(i, j)))
-            available_chars = [char for char in grid.chars if char not in used_list]
-            if len(available_chars) != 0:           # If no available chars: break, return False and previous changed cell will try its next available char.
-                random.shuffle(available_chars)
-                for char in available_chars:
-                    grid.change_cell_to(i, j, char)
-                    if grid.isGridFull() or solveSudoku(grid):     # Recursive call effectively moves to the next non-zero cell.
-                        return True
-                grid.change_cell_to(i, j, 0)        # Nothing worked: reset cell to zero and try next available char for previous non-zero cell.
-            break 
-    return False
-
-
-def createSudoku(grid, num_clues):
-    """
-    grid is an instance of the Grid class, filled with characters. Removes a number randomly and then uses the solveSudoku function to check whether 
-    there is a valid Sudoku with a different number in that cell. Repeat until there are num_clues clues in the board. Since at each removal step we only 
-    proceed if removal of that cell doesn't allow a new solution, uniqueness is guaranteed in the final puzzle (i.e. the original grid is the only solution). 
-    Returns the grid with only num_clues non-zero cells (i.e. clues).
-    """
-    while grid.countNonEmptyCells() > num_clues:
-        non_empty = grid.listNonEmptyCells()
-        random.shuffle(non_empty)
-        for cell in non_empty:
-            i, j = cell
-            orig_char = grid.getCell(i, j)
-            used_list = grid.getRow(i) + grid.getColumn(j) + list(itertools.chain(*grid.getSubsquare(i, j)))
-            available_chars = [char for char in grid.chars if char not in used_list]
-            random.shuffle(available_chars)
-            grid.delete_cell(i, j)
-            flag = False
-            for char in available_chars:
-                grid_copy = copy.deepcopy(grid)
-                grid_copy.change_cell_to(i, j, char)
-                if solveSudoku(grid_copy):                  # Checks if removing cell creates a new solution.
-                    flag = True
-                    break
-            if flag:
-                grid.change_cell_to(i, j, orig_char)       # If it does then keep this cell and try another.
-            else:
-                break
-    return grid
-
-
-def playNewSudoku(size, symbols, num_clues):
-    """
-    size: square number between 4 and 100 inclusive
-    symbols: 'letters' or 'numbers'
-    num_clues: integer (for size 9: between 17 and 81)
-    """
-    grid = Grid(size, symbols)
-    solveSudoku(grid)
-    return createSudoku(grid, num_clues)
-
-
-
-# Works but the createSudoku function is too slow (for size 9 when num_clues is near 20 it takes ages....)
-
-
-# print(playNewSudoku(9, 'numbers', 20))
+    def solveSudoku(self):
+        """
+        grid is an instance of the Grid class, either empty or partially filled. Function uses a DFS type algorithm to try and 
+        find a valid Sudoku based on the given grid.
+        Returns True if there is a complete valid sudoku grid possible, and updates the grid along the way. False otherwise.
+        """
+        for i, j in itertools.product(range(1, self.size + 1), range(1, self.size + 1)):
+            if self.getCell(i, j) == 0:
+                used_list = self.getRow(i) + self.getColumn(j) + list(itertools.chain(*self.getSubsquare(i, j)))
+                available_chars = [char for char in self.chars if char not in used_list]
+                if len(available_chars) != 0:           # If no available chars: break, return False and previous changed cell will try its next available char.
+                    random.shuffle(available_chars)
+                    for char in available_chars:
+                        self.change_cell_to(i, j, char)
+                        if self.isGridFull() or self.solveSudoku():     # Recursive call effectively moves to the next non-zero cell.
+                            return True
+                    self.change_cell_to(i, j, 0)        # Nothing worked: reset cell to zero and try next available char for previous non-zero cell.
+                break 
+        return False
