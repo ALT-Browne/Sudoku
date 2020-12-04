@@ -44,4 +44,5 @@ def playNewSudoku(size, symbols, num_clues):
     return createSudoku(grid, num_clues)
 
 
-# print(playNewSudoku(9, 'numbers', 30))
+if __name__ == "__main__":
+    print(playNewSudoku(9, 'letters', 30))
