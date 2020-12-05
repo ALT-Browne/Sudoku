@@ -32,6 +32,7 @@ def createSudoku(grid, num_clues):
     return grid
 
 # Works but the createSudoku function is too slow (for size 9 when num_clues is near 20 it takes ages....)
+# Could be due to the deep copy function because i used nested lists?
 
 def playNewSudoku(size, symbols, num_clues):
     """
@@ -45,4 +46,4 @@ def playNewSudoku(size, symbols, num_clues):
 
 
 if __name__ == "__main__":
-    print(playNewSudoku(9, 'letters', 30))
+    print(playNewSudoku(9, 'letters', 20))
