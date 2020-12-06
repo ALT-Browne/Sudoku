@@ -1,5 +1,7 @@
 from Sudoku import *
+import sys
 
+sys.setrecursionlimit(10**6)
 
 def createSudoku(grid, num_clues):
     """
@@ -14,12 +16,12 @@ def createSudoku(grid, num_clues):
         for cell in non_empty:
             i, j = cell
             orig_char = grid.getCell(i, j)
-            used_list = grid.getRow(i) + grid.getColumn(j) + list(itertools.chain(*grid.getSubsquare(i, j)))
+            used_list = grid.getRow(i) + grid.getColumn(j) + grid.getSubsquare(i, j)
             available_chars = [char for char in grid.chars if char not in used_list]
             random.shuffle(available_chars)
             grid.delete_cell(i, j)
             flag = False
-            for char in available_chars:
+            for char in available_chars:      
                 grid_copy = copy.deepcopy(grid)
                 grid_copy.change_cell_to(i, j, char)
                 if grid_copy.solveSudoku():                  # Checks if removing cell creates a new solution.
@@ -46,4 +48,4 @@ def playNewSudoku(size, symbols, num_clues):
 
 
 if __name__ == "__main__":
-    print(playNewSudoku(9, 'letters', 20))
+    print(playNewSudoku(9, 'numbers', 25))
