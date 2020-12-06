@@ -126,7 +126,7 @@ class Grid(object):
         """
         flag = True
         if self.getCell(x, y) != 0:
-            if self.getRow(x).count(self.getCell(x, y)) > 1 or self.getColumn(y).count(self.getCell(x, y)) > 1 or self.getSubsquare.count(self.getCell(x, y)) > 1:
+            if self.getRow(x).count(self.getCell(x, y)) > 1 or self.getColumn(y).count(self.getCell(x, y)) > 1 or self.getSubsquare(x, y).count(self.getCell(x, y)) > 1:
                 flag = False
         return flag
 
