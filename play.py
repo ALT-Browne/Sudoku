@@ -5,25 +5,19 @@ sys.setrecursionlimit(10**6)
 
 def createSudoku(grid, num_clues):
     """
-    grid is an instance of the Grid class, filled with characters. Removes a number randomly and then uses the solveSudoku function to check whether 
+    grid is an instance of the Grid class, filled (at least partially) with characters. Removes a number randomly and then uses the solveSudoku function to check whether 
     there is a valid Sudoku with a different number in that cell. Repeat until there are num_clues clues in the board. Since at each removal step we only 
     proceed if removal of that cell doesn't allow a new solution, uniqueness is guaranteed in the final puzzle (i.e. the original grid is the only solution).
 
     Returns the grid with only num_clues non-zero cells (i.e. clues).
     
-    HOWEVER, there is no known lower bound (in general) which is sufficient for every Sudoku of a given size (although it must be at least 17 for size 9).
-    The dead_ends stopping condition ensures the algorithm terminates in a reasonable time, but it means (especially for a low num_clues number)
-    it may not return the desired number of clues.
+    HOWEVER, there is no known lower bound (in general) which is sufficient for every Sudoku of a given size (although it must be at least 17 for size 9). Thus, it may not return the desired number of clues.
     """
-    dead_ends = 0
     non_empty = grid.listNonEmptyCells()
-    already_checked = []
-
-    while grid.countNonEmptyCells() > num_clues and dead_ends <= 20:    # Increase dead_ends bound to allow a longer search
-        non_empty = [cell for cell in non_empty if cell not in already_checked]     # Don't check cells which are dead ends
-        random.shuffle(non_empty)
-        already_checked = []
-        for cell in non_empty:
+    random.shuffle(non_empty)
+    
+    for cell in non_empty:
+        if grid.countNonEmptyCells() > num_clues:
             i, j = cell
             orig_char = grid.getCell(i, j)
             used_list = grid.getRow(i) + grid.getColumn(j) + grid.getSubsquare(i, j)
@@ -37,18 +31,12 @@ def createSudoku(grid, num_clues):
                 if grid_copy.solveSudoku():
                     flag = True
                     break
-            if flag:                            # If it does then keep this cell and try another.
+            if flag:                            # If it does then keep this cell and try the next one.
                 grid.change_cell_to(i, j, orig_char)
-                already_checked.append(cell)        # Keep track of dead_ends. Once a dead_end, always a dead_end.
-                dead_ends += 1       
-            else:
-                break
     return grid
 
-
-# Optimise by keeping a record of which cells have reached a dead end rather than doing it randomly each time round the while loop
-# This might help if it is true that: getting a dead end for a particular cell is not affected by the removal of another cell later.... 
-# i.e i dont need to check a cell again later on if it has already produced a dead end in a previous looping
+# Possible optimisation:
+# at each stage where i remove a cell, check to see how many other cells it turns in to dead ends. The more cells it turns in to dead ends the fewer cells i will be able to remove overall? Thus it could be a good idea to chek every nonempty cell (that is not already known to be a dead end) at each step, and remove the one who creates the fewest dead ends..... This could be a good way to get the most possible cells removed and therefore get to higher difficulty level. This will not affect those cells that were already dead ends before the current cells is (potentially) removed.
 
 
 def playNewSudoku(size, symbols, num_clues):
@@ -59,13 +47,8 @@ def playNewSudoku(size, symbols, num_clues):
     """
     grid = Grid(size, symbols)
     grid.solveSudoku()
-    print(grid)
-    createSudoku(grid, num_clues)
-    print(grid)
-    grid.solveSudoku()
-    print(grid)
-
-
+    return createSudoku(grid, num_clues)
+    
 
 if __name__ == "__main__":
-    print(playNewSudoku(9, 'numbers', 20))
+    print(playNewSudoku(9, 'numbers', 30))
