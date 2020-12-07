@@ -16,9 +16,13 @@ def createSudoku(grid, num_clues):
     it may not return the desired number of clues.
     """
     dead_ends = 0
-    while grid.countNonEmptyCells() > num_clues and dead_ends <= 10:    # Increase dead_ends bound to allow a longer search
-        non_empty = grid.listNonEmptyCells()
+    non_empty = grid.listNonEmptyCells()
+    already_checked = []
+
+    while grid.countNonEmptyCells() > num_clues and dead_ends <= 20:    # Increase dead_ends bound to allow a longer search
+        non_empty = [cell for cell in non_empty if cell not in already_checked]     # Don't check cells which are dead ends
         random.shuffle(non_empty)
+        already_checked = []
         for cell in non_empty:
             i, j = cell
             orig_char = grid.getCell(i, j)
@@ -27,15 +31,16 @@ def createSudoku(grid, num_clues):
             random.shuffle(available_chars)
             grid.delete_cell(i, j)
             flag = False
-            for char in available_chars:      
-                grid_copy = copy.deepcopy(grid)
+            grid_copy = copy.deepcopy(grid)
+            for char in available_chars:            # Checks if removing cell creates a new solution.
                 grid_copy.change_cell_to(i, j, char)
-                if grid_copy.solveSudoku():                  # Checks if removing cell creates a new solution.
+                if grid_copy.solveSudoku():
                     flag = True
                     break
-            if flag:
+            if flag:                            # If it does then keep this cell and try another.
                 grid.change_cell_to(i, j, orig_char)
-                dead_ends += 1       # If it does then keep this cell and try another.
+                already_checked.append(cell)        # Keep track of dead_ends. Once a dead_end, always a dead_end.
+                dead_ends += 1       
             else:
                 break
     return grid
@@ -54,8 +59,13 @@ def playNewSudoku(size, symbols, num_clues):
     """
     grid = Grid(size, symbols)
     grid.solveSudoku()
-    return createSudoku(grid, num_clues)
+    print(grid)
+    createSudoku(grid, num_clues)
+    print(grid)
+    grid.solveSudoku()
+    print(grid)
+
 
 
 if __name__ == "__main__":
-    print(playNewSudoku(9, 'numbers', 17))
+    print(playNewSudoku(9, 'numbers', 20))
