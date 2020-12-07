@@ -25,7 +25,8 @@ def createSudoku(grid, num_clues):
             random.shuffle(available_chars)
             grid.delete_cell(i, j)
             flag = False
-            grid_copy = copy.deepcopy(grid)
+            grid_copy = Grid(grid.size, grid.symbols)
+            grid_copy.cell_list = grid.cell_list[:]
             for char in available_chars:            # Checks if removing cell creates a new solution.
                 grid_copy.change_cell_to(i, j, char)
                 if grid_copy.solveSudoku():
@@ -35,7 +36,7 @@ def createSudoku(grid, num_clues):
                 grid.change_cell_to(i, j, orig_char)
     return grid
 
-# Possible optimisation:
+# Possible optimisation in solution (rather than time):
 # at each stage where i remove a cell, check to see how many other cells it turns in to dead ends. The more cells it turns in to dead ends the fewer cells i will be able to remove overall? Thus it could be a good idea to chek every nonempty cell (that is not already known to be a dead end) at each step, and remove the one who creates the fewest dead ends..... This could be a good way to get the most possible cells removed and therefore get to higher difficulty level. This will not affect those cells that were already dead ends before the current cells is (potentially) removed.
 
 
@@ -51,4 +52,4 @@ def playNewSudoku(size, symbols, num_clues):
     
 
 if __name__ == "__main__":
-    print(playNewSudoku(9, 'numbers', 30))
+    print(playNewSudoku(9, 'numbers', 20))

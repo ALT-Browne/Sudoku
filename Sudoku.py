@@ -2,7 +2,6 @@ import math
 import random
 import ast
 import itertools
-import copy
 
 
 class Grid(object):
