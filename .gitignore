@@ -1,0 +1,6 @@
+# Ignore pycache files
+__pycache__
+
+# ignore hidden folders
+.*
+!/.gitignore
