@@ -6,9 +6,15 @@ import itertools
 
 class Grid(object):
     """
-    Each instance will be a square grid composed of subsquares and cells which initially contain zeros representing blank spaces.
+    Each instance has an associated list representing a square Sudoku grid composed of subsquares and cells. The cells initially contain zeros representing blank spaces.
     """
     def __init__(self, size, symbols):
+        """
+        Initialize class variables.
+
+        param size: int
+        param symbols: str - either "numbers" or "letters"
+        """
         self.size = size
         self.symbols = symbols
         self.letters = 'abcdefghijklmnopqrstuvwxyz'
@@ -32,23 +38,28 @@ class Grid(object):
 
     def getCell(self, x, y):
         """
-        Returns the character in a cell, determined by x == row number and y == column number.
-        The code turns the input into the correct indices in order to access the cell.
+        Get character in cell position (x, y) == (row, column).
+
+        param x: int
+        param y: int
+
+        Return: int (if self.symbols == "numbers") or str (if self.symbols == "letters")
         """
         return self.cell_list[(x - 1) * self.size + y - 1]
 
     def change_cell_to(self, x, y, char):
         """
-        Changes character in a cell, determined by x == row number and y == column number.
-        The code turns the input into the correct indices in order to access the cell.
-        If using letters, use quotes around char. To delete, use 0.
+        Change character in cell position (x, y) == (row, column). If using letters, use quotes around char. To delete, use 0.
+
+        param x: int
+        param y: int
+        param char: int (if self.symbols == "numbers" or 0 for deletion) or str (if self.symbols == "letters")
         """
         self.cell_list[(x - 1) * self.size + y - 1] = char
 
     def user_change_cell(self):
         """
-        Allows the player to change the character in a cell, given as a (row, column) coordinate.
-        The code turns the input into the correct indices in order to access the cell.
+        User change character in cell position (x, y) == (row, column).
         """
         cell = ast.literal_eval(input('Enter a cell to change in the form x,y where x is the row number and y is the column number: '))
         char = input('Enter character or 0 to delete: ')
@@ -56,59 +67,83 @@ class Grid(object):
 
     def delete_cell(self, x, y):
         """
-        Takes two integers (x == row number, y == column number) specifying a cell.
-        Deletes the character in that cell (i.e. replaces it with a zero).
+        Delete character in cell position (x, y) == (row, column).
+
+        param x: int
+        param y: int
         """
         self.cell_list[(x - 1) * self.size + y - 1] = 0
 
-    def getRow(self, row):
+    def getRow(self, row_num):
         """
-        Takes an integer in range(1, self.size + 1) indicating the row.
-        Returns the row as a list.
-        """
-        return self.cell_list[(row - 1) * self.size : row * self.size]
+        Get row number row_num.
+        
+        param row_num: int
 
-    def isRowValid(self, row):
+        Return: list of ints and str
         """
-        Takes an integer in range(1, self.size + 1) indicating the row.
-        Returns True if there are no repeated characters (excluding 0).
+        return self.cell_list[(row_num - 1) * self.size : row_num * self.size]
+
+    def isRowValid(self, row_num):
         """
-        row_list = self.getRow(row)
+        Check if row row_num contains each character (excluding 0) at most once.
+        
+        param row_num: int
+
+        Return: bool
+        """
+        row_list = self.getRow(row_num)
         return all(row_list.count(char) == 1 for char in row_list if char != 0)
 
-    def getColumn(self, column):
+    def getColumn(self, column_num):
         """
-        Takes an integer in range(1, self.size + 1) indicating the column.
-        Returns the column as a list.
-        """
-        return self.cell_list[column - 1 : (self.size - 1) * self.size + column : self.size]
+        Get column number column_num.
+        
+        param column_num: int
 
-    def isColumnValid(self, column):
+        Return: list of ints and str
         """
-        Takes an integer in range(1, self.size + 1) indicating the column.
-        Returns True if there are no repeated characters (excluding 0).
+        return self.cell_list[column_num - 1 : (self.size - 1) * self.size + column_num : self.size]
+
+    def isColumnValid(self, column_num):
         """
-        column_list = self.getColumn(column)
+        Check if column column_num contains each character (excluding 0) at most once.
+        
+        param column_num: int
+
+        Return: bool
+        """
+        column_list = self.getColumn(column_num)
         return all(column_list.count(char) == 1 for char in column_list if char != 0)
 
     def getSubsquare(self, x, y):
         """
-        Takes two integers (x = row number, y = column number) specifying a cell.
-        Returns the subsquare containing the cell, as a list.
+        Get subsquare containing cell position (x, y) == (row, column).
+        
+        param x: int
+        param y: int
+
+        Return: list of ints and str
         """
         return [self.getCell(k + 1, l + 1) for k in range(((x - 1) // self.sqrt_size) * self.sqrt_size, ((x - 1) // self.sqrt_size) * self.sqrt_size + self.sqrt_size) for l in range(((y - 1) // self.sqrt_size) * self.sqrt_size, ((y - 1) // self.sqrt_size) * self.sqrt_size + self.sqrt_size)]
 
     def isSubsquareValid(self, x, y):
         """
-        Takes two integers (x = row number, y = column number) specifying a cell.
-        Returns True if there are no repeated entries (excluding 0) across all sublists in the subsquare containing the cell.
+        Check if subsquare containing cell position (x, y) == (row, column) contains each character (excluding 0) at most once.
+        
+        param x: int
+        param y: int
+
+        Return: bool
         """
         subsquare_list = self.getSubsquare(x, y)
         return all(subsquare_list.count(char) == 1 for char in subsquare_list if char != 0)
 
     def isGridValid(self):
         """
-        Returns True if all the rows, columns and subsquares are valid, False otherwise.
+        Check if all the rows, columns and subsquares are valid.
+
+        Return: bool
         """
         flag = True
         for i in range(1, self.size + 1):
@@ -121,7 +156,12 @@ class Grid(object):
 
     def isCellValid(self, x, y):
         """
-        Returns True if the entry in cell x, y is not repeated anywhere else in the same column, row or subsquare. False otherwise.
+        Check if the char in cell position (x, y) == (row, column) is repeated anywhere else in the same column, row or subsquare.
+
+        param x: int
+        param y: int
+
+        Return: bool
         """
         flag = True
         if self.getCell(x, y) != 0:
@@ -131,7 +171,9 @@ class Grid(object):
 
     def isGridFull(self):
         """
-        Checks to see if there are any gaps (i.e. zeros) in the grid.
+        Check if there are any empty cells (i.e. zeros) in the grid.
+
+        Return: bool
         """
         for i, j in itertools.product(range(1, self.size + 1), range(1, self.size + 1)):
             if self.getCell(i, j) == 0:
@@ -140,7 +182,9 @@ class Grid(object):
 
     def countNonEmptyCells(self):
         """
-        Counts the number of non-zeros in the grid.
+        Count the number of non-zero characters in the grid.
+
+        Return: int
         """
         count = 0
         for i, j in itertools.product(range(1, self.size + 1), range(1, self.size + 1)):
@@ -150,7 +194,9 @@ class Grid(object):
 
     def listNonEmptyCells(self):
         """
-        Returns a list of tuples (i, j) where i == row numebr and j = column number of a non-empty cell.
+        Find all non-empty cells (i.e. cell positions of non-zero characters).
+
+        Return: list of tuples of ints
         """
         lst = []
         for i, j in itertools.product(range(1, self.size + 1), range(1, self.size + 1)):
@@ -160,9 +206,9 @@ class Grid(object):
 
     def solveSudoku(self):
         """
-        grid is an instance of the Grid class, either empty or partially filled. Function uses a DFS type algorithm to try and 
-        find a valid Sudoku based on the given grid.
-        Returns True if there is a complete valid sudoku grid possible, and updates the grid along the way. False otherwise.
+        Use a DFS type algorithm to try and find a complete, valid Sudoku grid based on the current state of self.cell_list, and update along the way.
+
+        Return: bool
         """
         for i, j in itertools.product(range(1, self.size + 1), range(1, self.size + 1)):
             if self.getCell(i, j) == 0:
