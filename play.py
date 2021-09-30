@@ -16,4 +16,4 @@ def playNewSudoku(size, symbols, num_clues):
     
 
 if __name__ == "__main__":
-    print(playNewSudoku(9, 'numbers', 20))
+    print(playNewSudoku(9, 'numbers', 35))
