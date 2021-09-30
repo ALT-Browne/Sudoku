@@ -218,8 +218,8 @@ class Grid(object):
                     random.shuffle(available_chars)
                     for char in available_chars:
                         self.change_cell_to(i, j, char)
-                        if self.isGridFull() or self.solveSudoku():     # Recursive call effectively moves to the next non-zero cell.
+                        if self.isGridFull() or self.solveSudoku():     # Recursive call effectively moves to the next empty cell.
                             return True
-                    self.change_cell_to(i, j, 0)        # Nothing worked: reset cell to zero and try next available char for previous non-zero cell.
+                    self.change_cell_to(i, j, 0)        # Nothing worked: reset cell to zero and try next available char for previous empty cell.
                 break 
         return False
