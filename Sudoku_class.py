@@ -214,7 +214,7 @@ class Grid(object):
             if self.getCell(i, j) == 0:
                 used_list = self.getRow(i) + self.getColumn(j) + self.getSubsquare(i, j)
                 available_chars = [char for char in self.chars if char not in used_list]
-                if len(available_chars) != 0:           # If no available chars: break, return False and previous changed cell will try its next available char.
+                if len(available_chars) != 0:           # If no available chars: break, return False and try next available char for previous empty cell
                     random.shuffle(available_chars)
                     for char in available_chars:
                         self.change_cell_to(i, j, char)
